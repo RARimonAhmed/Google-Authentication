@@ -1,12 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_authentication/sign_in.dart';
 
 class SignOut extends StatelessWidget {
-  const SignOut({super.key});
+  final UserCredential? fAuthUserDetail;
+  const SignOut({super.key, required this.fAuthUserDetail});
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    Future<void> signOut() async {
+      await fAuthUserDetail!.user!.delete();
+      Navigator.push(
+          context, MaterialPageRoute(builder: ((context) => SignIn())));
+    }
+
     dynamic snackBar;
     return SafeArea(
         child: Scaffold(
@@ -15,15 +22,19 @@ class SignOut extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text('Welcome ${fAuthUserDetail!.user!.email}'),
+            const SizedBox(
+              height: 20,
+            ),
             ElevatedButton(
               onPressed: (() {
-                firebaseAuth.currentUser!.delete();
+                signOut();
                 snackBar =
-                    const SnackBar(content: Text('Sign in successfully'));
+                    const SnackBar(content: Text('Deleted Successfully.'));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }),
               child: const Text(
-                'Sign in With Google',
+                'Sign Out',
                 style: TextStyle(
                   color: Colors.deepPurple,
                   fontSize: 30,
